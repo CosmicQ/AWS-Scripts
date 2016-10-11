@@ -52,7 +52,9 @@ def collect_buckets():
 def dyn_menu(table, error):
 	# Function to print the menu
 	os.system('clear')
-	print "         Select tables to backup"
+	my_session = boto3.session.Session()
+	my_region = my_session.region_name
+	print ("         Select tables to backup                          Region: %s " % my_region)
 	print " "
 	print "   {0:35} ({1:6})  {2:>15}          {3:>8}".format("Name", "Status", "Table Size", "Read Units")
 	print "============================================================================================="
@@ -154,6 +156,34 @@ def get_prefix(selection):
 # Magic
 #
 ###################################################
+
+# Select Region
+os.system('clear')
+region_table    = collect_regions()
+status = None
+error_code  = None
+while True:
+	status = region_menu(region_table, error_code)
+
+	if status == 'x':
+		break
+
+	if status.isalpha():
+		error_code = "error"
+	elif int(status) in region_table:
+		region_update_selection(int(status), region_table)
+		error_code = None
+	else:
+		error_code = "error"
+
+for location in region_table:
+        if region_table[location]['select'] == True:
+                for value in selections:
+                        selections[value]['bucket'] = s3table[location]['name']
+                        selections[value]['prefix'] = ""
+
+
+# Collect info
 os.system('clear')
 s3table    = collect_buckets()
 dyntable   = collect_tables()
