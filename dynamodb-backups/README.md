@@ -15,6 +15,8 @@ Requirements:
 to read DynamoDB tables, and S3 buckets. DynamoDB is region specific, so you'll need to set the region you
 want to make selections from before running the script.
 
+TODO: Add region selection
+
   **generate-dynamodb-backup-template.py** is a menu driven script that allows the user to select
 the DynamoDB tables to backup, the S3 buckets to store the backups in, and what bucket prefixes to use
 if any prefixes are desired (s3 bucket subdirectories).
@@ -30,6 +32,8 @@ selection
   Select the S3 bucket you wish to use to store your backups.  The S3 bucket must already exist in order to
 select it.  You can only select one bucket to store backups in.  When you made your choice, press **x** to
 continue
+
+TODO: Add option to create the bucket
 
 ## Add prefixes
 
