@@ -49,7 +49,7 @@ def collect_tables(region):
 		count += 1
 	return table
 
-def collect_buckets(region):
+def collect_buckets():
 	# List S3 buckets
 	print " Collecting S3 bucket names..."
 	client = boto3.client('s3')
@@ -236,7 +236,7 @@ for value in region_table:
 
 # Collect info
 os.system('clear')
-s3table    = collect_buckets(my_region)
+s3table    = collect_buckets()
 dyntable   = collect_tables(my_region)
 
 # Get the list of tables to backup
