@@ -12,10 +12,26 @@ import json
 #
 # Functions
 #
-def collect_tables():
+def collect_regions():
+	# List S3 buckets
+	print " Collecting regions..."
+	client = boto3.client('ec2')
+	region_list = [region['RegionName'] for region in client.describe_regions()['Regions']]
+
+	region_list = sorted(region_list)
+	table = dict()
+	count = 1
+	for elem in region_list:
+		table[count] = dict()
+		table[count]['select']    = False
+		table[count]['name']      = elem
+	
+		count += 1
+	return table
+def collect_tables(region):
 	# Fucntion to gather table names 
 	print "\n\n Collecting DynamoDB table details..."
-	client = boto3.client('dynamodb')
+	client = boto3.client('dynamodb', region_name=region)
 	dyn_list = client.list_tables()
 
 	table = dict()
@@ -33,7 +49,7 @@ def collect_tables():
 		count += 1
 	return table
 
-def collect_buckets():
+def collect_buckets(region):
 	# List S3 buckets
 	print " Collecting S3 bucket names..."
 	client = boto3.client('s3')
@@ -150,6 +166,44 @@ def get_prefix(selection):
 	entered_data = raw_input('    Enter the prefix you wish to add: ')
 	return entered_data
 
+def region_menu(table, error):
+	# Function to print the menu
+	os.system('clear')
+	print "         AWS Regions"
+	print " "
+	print "   {0:35}".format("Name")
+	print "============================================================================================="
+
+	for key, value in table.items():
+		selected = ""
+		if value['select'] == True:
+			selected = "*"
+		print "{0:1}  {1:2} {2:35}".format(selected, key, value['name'])
+
+	print " "
+	if error == "error":
+		print "    Invalid input."
+	entered_data = raw_input('    Select the region by entering the number and pressing Enter.\nEnter \'x\' when done: ')
+
+
+        s3table = table
+	return entered_data
+def region_update_selection(n, table):
+	# Function to update selected items
+	if table[n]['select'] == False:
+		table[n]['select'] = True
+		num = len(table)
+		mycount = 1
+		# We can only have one selection.  Turn off all others
+		while mycount < num:
+			if mycount != n:
+				table[mycount]['select'] = False
+			mycount += 1
+
+	else:
+		table[n]['select'] = False
+
+	return table
 
 ###################################################
 #
@@ -176,17 +230,14 @@ while True:
 	else:
 		error_code = "error"
 
-for location in region_table:
-        if region_table[location]['select'] == True:
-                for value in selections:
-                        selections[value]['bucket'] = s3table[location]['name']
-                        selections[value]['prefix'] = ""
-
+for value in region_table:
+        if region_table[value]['select'] == True:
+		my_region = region_table[value]['name']
 
 # Collect info
 os.system('clear')
-s3table    = collect_buckets()
-dyntable   = collect_tables()
+s3table    = collect_buckets(my_region)
+dyntable   = collect_tables(my_region)
 
 # Get the list of tables to backup
 status = None
@@ -463,7 +514,7 @@ target.write("""
               },
               {
                 "Key": "amiVersion",
-                "StringValue": "3.8.0"
+                "StringValue": "3.9.0"
               },
               {
                 "Key": "masterInstanceType",
