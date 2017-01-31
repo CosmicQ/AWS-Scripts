@@ -365,7 +365,7 @@ for item1 in selections:
               }},
               {{
                 "Key": "directoryPath",
-                "StringValue": "s3://{0}/{1}/{2}/#{{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}}"
+                "StringValue": "s3://{0}/{1}{2}/#{{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}}"
               }}
             ]
           }},""".format(selections[item1]['bucket'], selections[item1]['prefix'], selections[item1]['dynamo_table']) )
