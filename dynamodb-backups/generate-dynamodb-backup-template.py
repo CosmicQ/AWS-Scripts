@@ -68,9 +68,9 @@ def collect_buckets():
 def dyn_menu(table, error):
 	# Function to print the menu
 	os.system('clear')
-	my_session = boto3.session.Session()
-	my_region = my_session.region_name
-	print ("         Select tables to backup                          Region: %s " % my_region)
+	session = boto3.session.Session()
+	region = session.region_name
+	print ("         Select tables to backup                          Region: %s " % region)
 	print " "
 	print "   {0:35} ({1:6})  {2:>15}          {3:>8}".format("Name", "Status", "Table Size", "Read Units")
 	print "============================================================================================="
@@ -129,12 +129,12 @@ def s3_update_selection(n, table):
 	if table[n]['select'] == False:
 		table[n]['select'] = True
 		num = len(table)
-		mycount = 1
+		count = 1
 		# We can only have one selection.  Turn off all others
-		while mycount < num:
-			if mycount != n:
-				table[mycount]['select'] = False
-			mycount += 1
+		while count < num:
+			if count != n:
+				table[count]['select'] = False
+			count += 1
 
 	else:
 		table[n]['select'] = False
@@ -193,12 +193,12 @@ def region_update_selection(n, table):
 	if table[n]['select'] == False:
 		table[n]['select'] = True
 		num = len(table)
-		mycount = 1
+		count = 1
 		# We can only have one selection.  Turn off all others
-		while mycount < num:
-			if mycount != n:
-				table[mycount]['select'] = False
-			mycount += 1
+		while count < num:
+			if count != n:
+				table[count]['select'] = False
+			count += 1
 
 	else:
 		table[n]['select'] = False
@@ -232,12 +232,12 @@ while True:
 
 for value in region_table:
         if region_table[value]['select'] == True:
-		my_region = region_table[value]['name']
+		region = region_table[value]['name']
 
 # Collect info
 os.system('clear')
 s3table    = collect_buckets()
-dyntable   = collect_tables(my_region)
+dyntable   = collect_tables(region)
 
 # Get the list of tables to backup
 status = None
@@ -354,6 +354,9 @@ target.write("""
 # S3 Bucket Destination
 
 for item1 in selections:
+        if selections[item1]['prefix']:
+		selections[item1]['prefix'] = selections[item1]['prefix'] + "/"
+
 	target.write("""
           {{
             "Id": "{2}S3BackupLocation",
