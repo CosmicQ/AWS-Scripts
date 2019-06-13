@@ -18,6 +18,7 @@ load=$( cat /proc/loadavg | awk '{print $2}' | awk -F. '{print $1}' )
 
 if (( $current > 0 )); then
   /usr/bin/logger "SAVER - $current accounts logged in"
+  echo 0 > /dev/shm/.count
   exit 0
 fi
 
